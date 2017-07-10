@@ -1,0 +1,22 @@
+{
+  "name": "HTTPRequest",
+  "version": "0.1.0",
+  "summary": "A short description of HTTPRequest.",
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://github.com/mucdong/HTTPRequest",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "mucdong": "doannguyen06@gmail.com"
+  },
+  "source": {
+    "git": "https://github.com/mucdong/HTTPRequest.git",
+    "tag": "0.1.0"
+  },
+  "platforms": {
+    "ios": "8.0"
+  },
+  "source_files": "HTTPRequest/Classes/**/*"
+}

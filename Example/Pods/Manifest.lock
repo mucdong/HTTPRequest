@@ -1,0 +1,16 @@
+PODS:
+  - HTTPRequest (0.1.0)
+
+DEPENDENCIES:
+  - HTTPRequest (from `../`)
+
+EXTERNAL SOURCES:
+  HTTPRequest:
+    :path: ../
+
+SPEC CHECKSUMS:
+  HTTPRequest: 9e88a0c26c3ebabd7152fb5c5e98fb70a8c2f0b0
+
+PODFILE CHECKSUM: c09fb3a11899b3ab5d218e5d11ca3127ab6032aa
+
+COCOAPODS: 1.2.0

@@ -1,0 +1,11 @@
+use_frameworks!
+
+target 'HTTPRequest_Example' do
+  pod 'HTTPRequest', :path => '../'
+
+  target 'HTTPRequest_Tests' do
+    inherit! :search_paths
+
+    
+  end
+end
