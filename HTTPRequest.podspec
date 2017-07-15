@@ -8,8 +8,8 @@
 
 Pod::Spec.new do |s|
   s.name             = 'HTTPRequest'
-  s.version          = '2.0.0'
-s.summary          = 'HTTPRequest is HTTP request library with GET, POST method'
+  s.version          = '1.0'
+  s.summary          = 'HTTPRequest is HTTP request library with GET, POST method'
 
 # This description is used to generate tags and improve search results.
 #   * Think: What does it do? Why did you write it? What is the focus?
@@ -18,15 +18,15 @@ s.summary          = 'HTTPRequest is HTTP request library with GET, POST method'
 #   * Finally, don't worry about the indent, CocoaPods strips it!
 
   s.description      = <<-DESC
-TODO: Add long description of the pod here.
-                       DESC
+HTTPRequest is Singleton queue object, it pushes request to a queue and send HTTP request one by one. After complete one request, the queue will send back it to delegate object if it's avaiable
+                     DESC
 
   s.homepage         = 'https://github.com/mucdong/HTTPRequest'
   # s.screenshots     = 'www.example.com/screenshots_1', 'www.example.com/screenshots_2'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'mucdong' => 'doannguyen06@gmail.com' }
   s.source           = { :git => 'https://github.com/mucdong/HTTPRequest.git', :tag => s.version.to_s }
-  # s.social_media_url = 'https://twitter.com/<TWITTER_USERNAME>'
+  # s.social_media_url = 'https://twitter.com/mucdong'
 
   s.ios.deployment_target = '8.0'
 
