@@ -15,6 +15,9 @@ public enum HTTPPostMediaParameterType {
     case video
 }
 
+/**
+ * This class is Media Parameter (photo, music, video)
+ */
 open class HTTPPOSTMediaParameter {
     private var paramType : HTTPPostMediaParameterType
     private var fieldName : String
@@ -81,7 +84,7 @@ public enum HTTPPostParameterType {
 }
 
 public class HTTPRequest: NSObject, URLSessionDataDelegate {
-    public weak var delegate : HTTPRequestDelegate?
+    private weak var delegate : HTTPRequestDelegate?
     internal weak var queueDelegate : HTTPRequestQueueDelegate?
     
     private var url : String?
@@ -108,6 +111,14 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
     private var authenticationChallenge : (username:String, password:String)?
     
     // MARK: Setter, Getter
+    open var Delegate : HTTPRequestDelegate? {
+        get {
+            return delegate
+        }
+        set {
+            delegate = newValue
+        }
+    }
     open var Url : String? {
         get {
             return url
@@ -570,11 +581,11 @@ open class HTTPQueue : HTTPRequestQueueDelegate {
     }
     
     // MARK: Class methods
-    class open func push(request aRequest : HTTPRequest) {
-        if aRequest.IsImageData {
-            HTTPQueue.ShareImageQueue.add(aRequest)
+    class open func push(_ request : HTTPRequest) {
+        if request.IsImageData {
+            HTTPQueue.ShareImageQueue.add(request)
         } else {
-            HTTPQueue.ShareDataQueue.add(aRequest)
+            HTTPQueue.ShareDataQueue.add(request)
         }
     }
     

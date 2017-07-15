@@ -17,11 +17,11 @@ class ViewController: UIViewController, HTTPRequestDelegate {
         
         var request : HTTPRequest
         request = HTTPRequest.createHTTPRequest("http://vnexpress.net");
-        request.delegate = self
+        request.Delegate = self
         request.Method = .get
         request.SuperTag = "GOOGLE"
         request.Tag = "Search"
-        HTTPQueue.push(request: request)
+        HTTPQueue.push(request)
     }
 
     override func didReceiveMemoryWarning() {
