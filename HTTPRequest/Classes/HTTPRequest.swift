@@ -149,6 +149,10 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
         }
     }
     
+    /**
+     * This field let HTTPRequest knows it will download an image, if will check mimeType when get header, addition HTTPRequest will be pushed to MediaQueue instead of Normal queue
+     * Default is false
+     */
     open var IsImageData : Bool {
         get {
             return isImageData
@@ -182,6 +186,9 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
         }
     }
     
+    /**
+     * Default is 60 seconds
+     */
     open var RequestTimeOut : Float {
         get {
             return requestTimeout
