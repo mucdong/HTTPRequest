@@ -3,6 +3,7 @@
 //  HTTPRequestLib
 //
 //  Created by Đoàn Nguyễn on 9/23/16.
+//  Modified by Đoàn Nguyễn on 12/16/17.
 //  Copyright © 2016 PlayUp. All rights reserved.
 //
 
@@ -77,48 +78,43 @@ public enum HTTPMethod {
     case post
 }
 
-public enum HTTPPostParameterType {
+public enum HTTPPostContentType {
     case urlEncode
     case json
     case formData
 }
 
 public class HTTPRequest: NSObject, URLSessionDataDelegate {
-    private weak var delegate : HTTPRequestDelegate?
+    public weak var delegate : HTTPRequestDelegate?
     internal weak var queueDelegate : HTTPRequestQueueDelegate?
     
     private var url : String?
     private var session : Foundation.URLSession?
     private var dataTask: URLSessionDataTask?
     private var resultData : Data?
-    private var userInfo : [String : String]?
-    private var method : HTTPMethod
+    
     private var responseTotalSize : Float?;
     private var isChecked : Bool
-    private var isImageData : Bool
     private var isCancelled : Bool
-    private var tag : String?
-    private var superTag : String?
-    private var requestTimeout : Float
     
     //for Header
-    private var headers : [String : String]?
+    public var headers : [String : String]?
     
     //for POST
-    private var postParamType : HTTPPostParameterType?
-    private var postTextData : [(key: String, value: String)]?
-    private var postMediaParams : Array<HTTPPOSTMediaParameter>?
-    private var authenticationChallenge : (username:String, password:String)?
+    public var userInfo : [String : String]?
+    public var method : HTTPMethod
+    public var tag : String?
+    public var superTag : String?
+    
+    public var isImageData : Bool
+    public var requestTimeout : Float
+    
+    public var postParamType : HTTPPostContentType?
+    public var postTextData : [String: String]?
+    public var postMediaParams : Array<HTTPPOSTMediaParameter>?
+    public var authenticationChallenge : (username:String, password:String)?
     
     // MARK: Setter, Getter
-    open var Delegate : HTTPRequestDelegate? {
-        get {
-            return delegate
-        }
-        set {
-            delegate = newValue
-        }
-    }
     open var Url : String? {
         get {
             return url
@@ -131,115 +127,9 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
         }
     }
     
-    open var UserInfo : [String : String]? {
-        get {
-            return userInfo
-        }
-        set {
-            userInfo = newValue
-        }
-    }
-    
-    open var Method : HTTPMethod {
-        get {
-            return method
-        }
-        set {
-            method = newValue
-        }
-    }
-    
-    /**
-     * This field let HTTPRequest knows it will download an image, if will check mimeType when get header, addition HTTPRequest will be pushed to MediaQueue instead of Normal queue
-     * Default is false
-     */
-    open var IsImageData : Bool {
-        get {
-            return isImageData
-        }
-        set {
-            isImageData = newValue
-        }
-    }
-    
     open var IsCancelled : Bool {
         get {
             return isCancelled
-        }
-    }
-    
-    open var Tag : String? {
-        get {
-            return tag
-        }
-        set {
-            tag = newValue
-        }
-    }
-    
-    open var SuperTag : String? {
-        get {
-            return superTag
-        }
-        set {
-            superTag = newValue
-        }
-    }
-    
-    /**
-     * Default is 60 seconds
-     */
-    open var RequestTimeOut : Float {
-        get {
-            return requestTimeout
-        }
-        set {
-            requestTimeout = newValue
-        }
-    }
-    
-    open var HeaderParams : [String : String]? {
-        get {
-            return headers
-        }
-        set {
-            headers = newValue
-        }
-    }
-    
-    open var POSTParamType : HTTPPostParameterType? {
-        get {
-            return postParamType
-        }
-        set {
-            postParamType = newValue
-        }
-    }
-    
-    open var POSTTextData : [(key: String, value : String)]? {
-        get {
-            return postTextData
-        }
-        set {
-            postTextData = newValue
-        }
-    }
-    
-    open var POSTMediaParams : Array<HTTPPOSTMediaParameter>? {
-        get {
-            return postMediaParams
-        }
-        set {
-            postMediaParams = newValue
-        }
-    }
-    
-    open var AuthenticationChallenge : (username:String, password:String)? {
-        get {
-            return authenticationChallenge
-        }
-        set {
-            authenticationChallenge = newValue
         }
     }
     
@@ -293,25 +183,25 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
             }
             session = Foundation.URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: OperationQueue.main)
             /*dataTask = session!.dataTask(with: request, completionHandler: {
-                (data, response, error) in
-                
-                self.cancelCheckTimeout()
-                
-                guard let _:Data = data, let _:URLResponse = response  , error == nil else {
-                    if self.delegate != nil && !self.isCancelled {
-                        self.delegate!.requestDidFinish(self, status: .error)
-                    }
-                    return
-                }
-                
-                let dataString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
-                print(dataString)
-                self.resultData = data
-                if self.delegate != nil && !self.isCancelled {
-                    self.delegate!.requestDidFinish(self, status: .success)
-                }
-                
-            })*/
+             (data, response, error) in
+             
+             self.cancelCheckTimeout()
+             
+             guard let _:Data = data, let _:URLResponse = response  , error == nil else {
+             if self.delegate != nil && !self.isCancelled {
+             self.delegate!.requestDidFinish(self, status: .error)
+             }
+             return
+             }
+             
+             let dataString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
+             print(dataString)
+             self.resultData = data
+             if self.delegate != nil && !self.isCancelled {
+             self.delegate!.requestDidFinish(self, status: .success)
+             }
+             
+             })*/
             dataTask = session!.dataTask(with: request)
             dataTask!.resume()
             
@@ -337,7 +227,7 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
                 }
             }
             
-            if postParamType == HTTPPostParameterType.formData{
+            if postParamType == HTTPPostContentType.formData{
                 let boundary = "----MDHTTPFormBoundaryE19zNvXGzXaLvS5C";
                 let contentType = "multipart/form-data; boundary=\(boundary)"
                 request.setValue(contentType, forHTTPHeaderField: "Content-Type")
@@ -389,50 +279,62 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
                 request.httpBody = body as Data
             } else {
                 var content = ""
-                if postParamType == HTTPPostParameterType.json {
+                if postParamType == HTTPPostContentType.json {
                     request.setValue("application/json", forHTTPHeaderField: "Accept")
                     request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+                    if postTextData != nil {
+                        var  requestData = Data()
+                        do {
+                            requestData = try JSONSerialization.data(withJSONObject:postTextData!, options: .prettyPrinted)
+                        } catch {
+                            print(error.localizedDescription)
+                        }
+                        
+                        request.setValue("\(content.count)", forHTTPHeaderField: "Content-Length")
+                        request.httpBody = requestData
+                    }
                 } else {
                     request.setValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+                    if postTextData != nil {
+                        for (key, value) in postTextData! {
+                            if content.count == 0 {
+                                content = content + "\(key)=\(value)"
+                            } else {
+                                content = content + "&\(key)=\(value)"
+                            }
+                        }
+                        
+                        let requestData : Data? = content.data(using: String.Encoding.utf8)
+                        request.setValue("\(content.count)", forHTTPHeaderField: "Content-Length")
+                        request.httpBody = requestData
+                    }
                 }
                 
-                if postTextData != nil {
-                    for (key, value) in postTextData! {
-                        if content.characters.count == 0 {
-                            content = content + "\(key)=\(value)"
-                        } else {
-                            content = content + "&\(key)=\(value)"
-                        }
-                    }
-                    
-                    let requestData : Data? = content.data(using: String.Encoding.utf8)
-                    request.setValue("\(content.characters.count)", forHTTPHeaderField: "Content-Length")
-                    request.httpBody = requestData
-                }
+                
             }
             
             
             session = Foundation.URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: OperationQueue.main)
             /*dataTask = session!.dataTask(with: request, completionHandler: {
-                (data, response, error) in
-                
-                self.cancelCheckTimeout()
-                
-                guard let _:Data = data, let _:URLResponse = response  , error == nil else {
-                    if self.delegate != nil && !self.isCancelled {
-                        self.delegate!.requestDidFinish(self, status: .error)
-                    }
-                    return
-                }
-                
-                let dataString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
-                print(dataString)
-                self.resultData = data
-                if self.delegate != nil && !self.isCancelled {
-                    self.delegate!.requestDidFinish(self, status: .success)
-                }
-                
-            })*/
+             (data, response, error) in
+             
+             self.cancelCheckTimeout()
+             
+             guard let _:Data = data, let _:URLResponse = response  , error == nil else {
+             if self.delegate != nil && !self.isCancelled {
+             self.delegate!.requestDidFinish(self, status: .error)
+             }
+             return
+             }
+             
+             let dataString = NSString(data: data!, encoding: String.Encoding.utf8.rawValue)
+             print(dataString)
+             self.resultData = data
+             if self.delegate != nil && !self.isCancelled {
+             self.delegate!.requestDidFinish(self, status: .success)
+             }
+             
+             })*/
             
             dataTask = session!.dataTask(with: request)
             dataTask!.resume()
@@ -472,10 +374,10 @@ public class HTTPRequest: NSObject, URLSessionDataDelegate {
             resultData?.append(data);
         }
         
-#if DEBUG
-        let str = String(data: resultData!, encoding: .utf8)
-        print(str)
-#endif
+        #if DEBUG
+            let str = String(data: resultData!, encoding: .utf8)
+            print(str)
+        #endif
     }
     
     open func urlSession(_ session: URLSession, dataTask: URLSessionDataTask, didReceive response: URLResponse, completionHandler: @escaping (URLSession.ResponseDisposition) -> Void) {
@@ -589,7 +491,7 @@ open class HTTPQueue : HTTPRequestQueueDelegate {
     
     // MARK: Class methods
     class open func push(_ request : HTTPRequest) {
-        if request.IsImageData {
+        if request.isImageData {
             HTTPQueue.ShareImageQueue.add(request)
         } else {
             HTTPQueue.ShareDataQueue.add(request)
@@ -597,7 +499,7 @@ open class HTTPQueue : HTTPRequestQueueDelegate {
     }
     
     class open func removeRequest(_ request : HTTPRequest) {
-        if request.IsImageData {
+        if request.isImageData {
             HTTPQueue.ShareImageQueue.cancelRequest(request)
         } else {
             HTTPQueue.ShareDataQueue.cancelRequest(request)
@@ -691,7 +593,7 @@ open class HTTPQueue : HTTPRequestQueueDelegate {
         var i = 0
         while i < requests.count {
             let request = requests[i]
-            if request.Tag == tag {
+            if request.tag == tag {
                 request.cancelRequest()
                 requests.remove(at: i)
                 
@@ -714,7 +616,7 @@ open class HTTPQueue : HTTPRequestQueueDelegate {
         var i : Int = 0
         while i < requests.count {
             let request = requests[i]
-            if request.SuperTag == supertag {
+            if request.superTag == supertag {
                 request.cancelRequest()
                 requests.remove(at: i)
                 if i == sendingIndex {
@@ -730,3 +632,4 @@ open class HTTPQueue : HTTPRequestQueueDelegate {
         }
     }
 }
+
