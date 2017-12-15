@@ -16,11 +16,11 @@ class ViewController: UIViewController, HTTPRequestDelegate {
         // Do any additional setup after loading the view, typically from a nib.
         
         var request : HTTPRequest
-        request = HTTPRequest.createHTTPRequest("http://vnexpress.net");
-        request.Delegate = self
-        request.Method = .get
-        request.SuperTag = "GOOGLE"
-        request.Tag = "Search"
+        request = HTTPRequest.createHTTPRequest("http://google.com");
+        request.delegate = self
+        request.method = .get
+        request.superTag = "GOOGLE"
+        request.tag = "Search"
         HTTPQueue.push(request)
     }
 
@@ -30,7 +30,7 @@ class ViewController: UIViewController, HTTPRequestDelegate {
     }
 
     func requestDidFinish(_ request : HTTPRequest, status : HTTPRequestStatus) {
-        if request.Tag == "Search" {
+        if request.tag == "Search" {
             if status == .success {
                 let str = String(data: request.ResultData!, encoding: .utf8)
                 #if DEBUG
